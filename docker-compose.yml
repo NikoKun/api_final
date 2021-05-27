@@ -1,0 +1,19 @@
+version: "3.3"
+   
+services:
+      
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+     - .:/code
+    ports:
+     - "8081:8000"
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     PMA_HOST: final-database.cxequfvxfbp7.us-east-1.rds.amazonaws.com
+    ports:
+     - "8080:80"
+
