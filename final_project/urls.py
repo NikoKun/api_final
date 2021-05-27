@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 
-from final_api.views import test, register, checkuser, logmein
+from final_api.views import test, register, checkuser, logmein, getuser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +26,6 @@ urlpatterns = [
     path('register/', register.as_view(), name='register'),
     path('checkuser/', checkuser.as_view(), name='checkuser'),
     path('logmein/', logmein.as_view(), name='logmein'),
+    path('getuser/', getuser.as_view(), name='getuser'),
 
 ]

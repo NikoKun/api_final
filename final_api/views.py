@@ -93,12 +93,13 @@ class register(View):
 
 class checkuser(View):
     def post(self, request):
-        data = json.loads(request.body)
+        data = str(request.body)[2:-1]
         user = UserInfo.objects.filter(token=data).first()
 
         if user is not None:
             return JsonResponse(1, safe=False)
-        return JsonResponse('This user does not exist...', safe=False)
+        return JsonResponse('This user does not exist... '+str(data), safe=False)
+
 
 
 
@@ -119,6 +120,24 @@ class logmein(View):
 
 
 
+class getuser(View):
+    def post(self, request):
+        tokenVar = str(request.body)[2:-1]
+        user_info = UserInfo.objects.filter(token=tokenVar).first()
+
+        if user_info is not None:
+            user = User.objects.filter(id=user_info.id_user.id).first()
+            dataToPost = {
+                "username": user.username,
+                "is_superuser": user.is_superuser,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "img": user_info.img,
+                "desc": user_info.desc,
+            }
+            return JsonResponse(dataToPost, safe=False)
+        return "no"
 
 
 
@@ -133,17 +152,6 @@ class logmein(View):
 
 
 
-class getUser(View):
-    def post(self, request):
-        user_info = UserInfo.objects.filter(token=request.POST['token']).first()
-
-        if user_info is not None:
-            dataToPost = {
-                "user": User.objects.filter(id=user_info.id_user).first(),
-                "user_info": user_info
-            }
-            return dataToPost
-        return "no"
 
 
 
