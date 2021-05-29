@@ -44,40 +44,39 @@ class getHomePosts(View):
             allfollows = Follow.objects.filter(id_user_folloing = user_info.id_user.id)
 
             for postTMP in allposts:
-                if postTMP.in_response is None:
-                    for followTMP in allfollows:
-                        if postTMP.writer.id != user_info.id_user.id:
-                            if postTMP.writer.id == followTMP.id_user_followed.id or postTMP.writer.id == user_info.id_user.id:
+                for followTMP in allfollows:
+                    if postTMP.writer.id != user_info.id_user.id:
+                        if postTMP.writer.id == followTMP.id_user_followed.id or postTMP.writer.id == user_info.id_user.id:
 
-                                user_followed = User.objects.filter(id = postTMP.writer.id).first()        
-                                user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
-                                like = Like.objects.filter(id_user = user_info.id_user, id_post = postTMP).first()    
-                                likes = Like.objects.filter(id_post = postTMP)
-                                replies = Post.objects.filter(in_response = postTMP.id)
+                            user_followed = User.objects.filter(id = postTMP.writer.id).first()        
+                            user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
+                            like = Like.objects.filter(id_user = user_info.id_user, id_post = postTMP).first()    
+                            likes = Like.objects.filter(id_post = postTMP)
+                            replies = Post.objects.filter(in_response = postTMP.id)
 
-                                if like is not None: 
-                                    info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
-                                    dataToPost.append(info)
-                                else:
-                                    info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
-                                    dataToPost.append(info)
+                            if like is not None: 
+                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                                dataToPost.append(info)
+                            else:
+                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                                dataToPost.append(info)
 
-                                break
+                            break
 
-                    if postTMP.writer.id == user_info.id_user.id:
+                if postTMP.writer.id == user_info.id_user.id:
 
-                        user_followed = User.objects.filter(id = postTMP.writer.id).first()        
-                        user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
-                        like = Like.objects.filter(id_user = postTMP.writer, id_post = postTMP).first()    
-                        likes = Like.objects.filter(id_post = postTMP)
-                        replies = Post.objects.filter(in_response = postTMP.id)
+                    user_followed = User.objects.filter(id = postTMP.writer.id).first()        
+                    user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
+                    like = Like.objects.filter(id_user = postTMP.writer, id_post = postTMP).first()    
+                    likes = Like.objects.filter(id_post = postTMP)
+                    replies = Post.objects.filter(in_response = postTMP.id)
 
-                        if like is not None: 
-                            info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
-                            dataToPost.append(info)
-                        else:
-                            info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
-                            dataToPost.append(info)
+                    if like is not None: 
+                        info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                        dataToPost.append(info)
+                    else:
+                        info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                        dataToPost.append(info)
 
             return JsonResponse(dataToPost, safe=False)
         return JsonResponse('no', safe=False)
@@ -96,7 +95,119 @@ class getExplorePosts(View):
             allfollows = User.objects.all()
                 
             for postTMP in allposts:
-                if postTMP.in_response is None:
+                for followTMP in allfollows:
+                    if postTMP.writer.id == followTMP.id:
+
+                        user_followed = User.objects.filter(id = followTMP.id).first()        
+                        user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
+                        like = Like.objects.filter(id_user = user_info.id_user, id_post = postTMP).first()    
+                        likes = Like.objects.filter(id_post = postTMP)
+                        replies = Post.objects.filter(in_response = postTMP.id)
+
+                        if like is not None: 
+                            info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                            dataToPost.append(info)
+                        else:
+                            info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                            dataToPost.append(info)
+                        break
+
+            return JsonResponse(dataToPost, safe=False)
+        return JsonResponse('no', safe=False)
+
+
+
+class getLikedPosts(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        user_info = UserInfo.objects.filter(token=data['token']).first()
+        user_req_info = UserInfo.objects.filter(id_user=data['iduser']).first()
+
+        if user_info is not None:
+            dataToPost = list()
+            allposts = Post.objects.all().order_by('-publish_date')
+            allfollows = User.objects.all()
+
+            for postTMP in allposts:
+                for followTMP in allfollows:
+                    if postTMP.writer.id == followTMP.id:
+
+                        user_followed = User.objects.filter(id = followTMP.id).first()        
+                        user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
+                        like = Like.objects.filter(id_user = user_req_info.id_user, id_post = postTMP).first()    
+                        likes = Like.objects.filter(id_post = postTMP)
+                        replies = Post.objects.filter(in_response = postTMP.id)
+
+                        if like is not None: 
+                            info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                            dataToPost.append(info)
+
+                        break
+                        
+            return JsonResponse(dataToPost, safe=False)
+        return JsonResponse('no', safe=False)
+
+
+
+
+class getResponseToYou(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        user_info = UserInfo.objects.filter(token=data['token']).first()
+        user_req_info = UserInfo.objects.filter(id_user=data['iduser']).first()
+
+        if user_info is not None:
+            dataToPost = list()
+            allposts = Post.objects.all().order_by('-publish_date')
+            allfollows = User.objects.all()
+
+            for postTMP in allposts:
+                if postTMP.in_response is not None:
+                    posrresponded = Post.objects.filter(id=postTMP.in_response).first()
+                    if posrresponded.writer.id == user_req_info.id_user.id:
+                        for followTMP in allfollows:
+                            if postTMP.writer.id == followTMP.id:
+
+                                user_followed = User.objects.filter(id = followTMP.id).first()        
+                                user_followed_info = UserInfo.objects.filter(id_user=user_followed).first()
+                                like = Like.objects.filter(id_user = user_req_info.id_user, id_post = postTMP).first()    
+                                likes = Like.objects.filter(id_post = postTMP)
+                                replies = Post.objects.filter(in_response = postTMP.id)
+
+                                if like is not None: 
+                                    info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                                    dataToPost.append(info)
+                                else:
+                                    info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                                    dataToPost.append(info)
+                                break
+                        
+            return JsonResponse(dataToPost, safe=False)
+        return JsonResponse('no', safe=False)
+
+
+
+
+
+
+
+
+
+
+class postsearch(View):
+    def post(self, request):
+        search = json.loads(request.body)
+        user_info = UserInfo.objects.filter(token=search['token']).first()
+
+        if user_info is not None:
+            dataToPost = list()
+            allposts = Post.objects.all().order_by('-publish_date')
+            allfollows = User.objects.all()
+                    
+            for postTMP in allposts:
+                user_search = User.objects.filter(id=postTMP.writer.id).first()
+
+                if search['searchabar'].upper() in postTMP.body.upper() or search['searchabar'].upper() in user_search.username.upper() or search['searchabar'].upper() in user_search.first_name.upper() or search['searchabar'].upper() in user_search.last_name.upper():
                     for followTMP in allfollows:
                         if postTMP.writer.id == followTMP.id:
 
@@ -107,17 +218,65 @@ class getExplorePosts(View):
                             replies = Post.objects.filter(in_response = postTMP.id)
 
                             if like is not None: 
-                                info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
-                                dataToPost.append(info)
+                                    info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                                    dataToPost.append(info)
                             else:
-                                info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
-                                dataToPost.append(info)
-
+                                    info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                                    dataToPost.append(info)
                             break
 
             return JsonResponse(dataToPost, safe=False)
         return JsonResponse('no', safe=False)
 
+
+
+
+
+
+class usersearch(View):
+    def post(self, request):
+        search = json.loads(request.body)
+        user_info = UserInfo.objects.filter(token=search['token']).first()
+
+        if user_info is not None:
+            dataToPost = list()
+            allusers = User.objects.all()
+                    
+            for user_search in allusers:
+                if search['searchabar'].upper() in user_search.username.upper() or search['searchabar'].upper() in user_search.first_name.upper() or search['searchabar'].upper() in user_search.last_name.upper():
+                    user = user_search
+                    user_info_following = UserInfo.objects.filter(id_user=user.id).first()
+
+                    following = Follow.objects.filter(id_user_folloing=user.id)
+                    your_followers = Follow.objects.filter(id_user_followed=user.id)
+                    
+                    follow =  Follow.objects.filter(id_user_folloing=user_info.id_user.id, id_user_followed=user.id)
+                    followQuestion = 0
+
+                    if len(follow) is not 0:
+                        followQuestion = 1
+                    if user_info.id_user.id is user.id:
+                        followQuestion = 2
+
+                    datatoapend = {
+                        "id": user.id,
+                        "username": user.username,
+                        "is_superuser": user.is_superuser,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "img": user_info_following.img,
+                        "desc": user_info_following.desc,
+                        "following": str(len(following)),
+                        "your_followers": str(len(your_followers)),
+                        "followQuestion": followQuestion,
+                    }
+                    dataToPost.append(datatoapend)
+
+
+
+            return JsonResponse(dataToPost, safe=False)
+        return JsonResponse('no', safe=False)
 
 
 
@@ -193,10 +352,10 @@ class editprofile(View):
         if user_info is not None:
             user = User.objects.filter(id=user_info.id_user.id).first()
 
-            if data['username'][0] is not None and data['username'][0] is not '':
-                if len(data['username'][0]) > 3 and len(data['username'][0]) < 21 is not '':
+            if data['username'] is not None and data['username'] is not '':
+                if len(data['username']) > 3 and len(data['username']) < 21 is not '':
                     if data['email'][0] is not None and data['email'][0] is not '':
-                        userRepe = User.objects.filter(username=data['username'][0]).first()
+                        userRepe = User.objects.filter(username=data['username']).first()
                         if userRepe.id == user_info.id_user.id:
                             userRepe = None
 
@@ -207,7 +366,7 @@ class editprofile(View):
 
 
                             if userRepe is None:
-                                user.username = data['username'][0]
+                                user.username = data['username']
                                 user.email = data['email'][0]
                                 user.first_name = data['firstname'][0]
                                 user.last_name = data['lastname'][0]
@@ -490,10 +649,10 @@ class getUsersPosts(View):
                     replies = Post.objects.filter(in_response = postTMP.id)
 
                     if like is not None: 
-                        info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                        info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
                         dataToPost.append(info)
                     else:
-                        info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                        info = { 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
                         dataToPost.append(info)
 
             return JsonResponse(dataToPost, safe=False)
@@ -702,11 +861,11 @@ class getPost(View):
             replies = Post.objects.filter(in_response = post.id)
 
             if like is not None: 
-                info = { 'inreplies': post.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': post.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_info_followed.img, 'postImage': post.images, 'text': post.body, 'like': 1}   
+                info = { 'inreplies': post.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': post.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_info_followed.img, 'postImage': post.images, 'text': post.body, 'like': 1}   
                 return JsonResponse(info, safe=False)
 
             else:
-                info = { 'inreplies': post.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': post.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_info_followed.img, 'postImage': post.images, 'text': post.body, 'like': 0}   
+                info = { 'inreplies': post.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': post.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_info_followed.img, 'postImage': post.images, 'text': post.body, 'like': 0}   
                 return JsonResponse(info, safe=False)
 
         return JsonResponse('no', safe=False)
@@ -738,10 +897,10 @@ class getResponsePosts(View):
                             replies = Post.objects.filter(in_response = postTMP.id)
 
                             if like is not None: 
-                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
+                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 1}   
                                 dataToPost.append(info)
                             else:
-                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+''+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
+                                info = { 'inreplies': postTMP.in_response, 'replies': len(replies), 'likes': len(likes), 'idpost': postTMP.id, 'iduser': user_followed.id, 'name': user_followed.username, 'lastnames': user_followed.first_name+' '+user_followed.last_name, 'image': user_followed_info.img, 'postImage': postTMP.images, 'text': postTMP.body, 'like': 0}   
                                 dataToPost.append(info)
 
                             break

@@ -22,6 +22,7 @@ from final_api.views import test, register, checkuser, logmein, getuser, post, g
 from final_api.views import getExplorePosts, getuserbyid, getUsersPosts, like, unlike
 from final_api.views import getPost, getResponsePosts, removepost, postresponse, follow
 from final_api.views import unfollow, getUsersFollowing, getUsersFollowed, editprofile
+from final_api.views import postsearch, usersearch, getLikedPosts, getResponseToYou
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,5 +48,9 @@ urlpatterns = [
     path('getUsersFollowing/', getUsersFollowing.as_view(), name='getUsersFollowing'),
     path('getUsersFollowed/', getUsersFollowed.as_view(), name='getUsersFollowed'),
     path('editprofile/', editprofile.as_view(), name='editprofile'),
+    path('postsearch/', postsearch.as_view(), name='postsearch'),
+    path('usersearch/', usersearch.as_view(), name='usersearch'),
+    path('getLikedPosts/', getLikedPosts.as_view(), name='getLikedPosts'),
+    path('getResponseToYou/', getResponseToYou.as_view(), name='getResponseToYou'),
 
 ]
