@@ -12,13 +12,13 @@ class UserInfo(models.Model):
     birthdate = models.DateTimeField(auto_now=True, auto_now_add=False)
     verified =  models.BooleanField(default=False)
     public =  models.BooleanField(default=False)
-    token =  models.CharField(max_length=500)
+    token =  models.CharField(max_length=500, default=None)
 
 
 
 class Post(models.Model):
     writer = models.ForeignKey(User, on_delete=CASCADE, related_name='writer')
-    in_response = models.ForeignKey(User, on_delete=CASCADE, related_name='in_response')
+    in_response = models.IntegerField(default=None)
     body = models.CharField(max_length=500)
     images = models.CharField(max_length=500)
     publish_date = models.DateTimeField(auto_now=True, auto_now_add=False)
