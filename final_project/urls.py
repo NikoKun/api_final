@@ -20,7 +20,8 @@ from django.urls import path
 
 from final_api.views import test, register, checkuser, logmein, getuser, post, getHomePosts
 from final_api.views import getExplorePosts, getuserbyid, getUsersPosts, like, unlike
-from final_api.views import getPost, getResponsePosts
+from final_api.views import getPost, getResponsePosts, removepost, postresponse, follow
+from final_api.views import unfollow, getUsersFollowing, getUsersFollowed, editprofile
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,5 +39,13 @@ urlpatterns = [
     path('unlike/', unlike.as_view(), name='unlike'),
     path('getPost/', getPost.as_view(), name='getPost'),
     path('getResponsePosts/', getResponsePosts.as_view(), name='getResponsePosts'),
+    path('removepost/', removepost.as_view(), name='removepost'),
+    path('postresponse/', postresponse.as_view(), name='postresponse'),
+    path('postresponse/', postresponse.as_view(), name='postresponse'),
+    path('follow/', follow.as_view(), name='follow'),
+    path('unfollow/', unfollow.as_view(), name='unfollow'),
+    path('getUsersFollowing/', getUsersFollowing.as_view(), name='getUsersFollowing'),
+    path('getUsersFollowed/', getUsersFollowed.as_view(), name='getUsersFollowed'),
+    path('editprofile/', editprofile.as_view(), name='editprofile'),
 
 ]
